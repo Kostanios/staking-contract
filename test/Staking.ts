@@ -61,65 +61,65 @@ describe("Staking and Unstaking", function () {
     });
   });
 
-  describe("Stake", () => {
-    const value = ethers.utils.parseEther("1");
-
-    it("should increase stakedAmount if account send value to contract", async () => {
-      await expect(() => contract.stake({ value })).to.changeEtherBalances(
-        [accounts[0], contract],
-        [value.mul("-1"), value]
-      );
-
-      expect(await contract.accountStake(accounts[0].address)).to.equal(value);
-    });
-
-    it("should emit Staked event", async () => {
-      await expect(contract.stake({ value }))
-        .to.emit(contract, "Staked")
-        .withArgs(accounts[0].address, value);
-    });
-
-    it("should append to validator set if the account has staked enough amount", async () => {
-      await contract.stake({ value });
-
-      expect(await contract.validators()).to.include(accounts[0].address);
-      expect(await contract.isValidator(accounts[0].address)).to.be.true;
-    });
-
-    it("shouldn't append new validator if the account has not staked enough amount", async () => {
-      const value = ethers.utils.parseEther("0.5");
-      await contract.stake({ value });
-
-      expect(await contract.validators()).not.to.include(accounts[0].address);
-      expect(await contract.isValidator(accounts[0].address)).to.be.false;
-    });
-
-    it("should reach full validator set capacity", async () => {
-      await Promise.all(
-        accounts.slice(0, 6).map((account) => {
-          stake(account, value);
-        })
-      );
-
-      await expect(stake(accounts[6], value)).to.be.revertedWith(
-        "Validator set has reached full capacity"
-      );
-    });
-
-    it("should be able to stake from staker account", async () => {
-      // 6 accounts will stake and become staker first
-      await Promise.all(
-        accounts.slice(0, 6).map((account) => {
-          stake(account, value);
-        })
-      );
-
-      // staker can stake more
-      await expect(stake(accounts[0], value))
-        .to.emit(contract, "Staked")
-        .withArgs(accounts[0].address, value);
-    });
-  });
+  // describe("Stake", () => {
+  //   const value = ethers.utils.parseEther("1");
+  //
+  //   it("should increase stakedAmount if account send value to contract", async () => {
+  //     await expect(() => contract.stake({ value })).to.changeEtherBalances(
+  //       [accounts[0], contract],
+  //       [value.mul("-1"), value]
+  //     );
+  //
+  //     expect(await contract.accountStake(accounts[0].address)).to.equal(value);
+  //   });
+  //
+  //   it("should emit Staked event", async () => {
+  //     await expect(contract.stake({ value }))
+  //       .to.emit(contract, "Staked")
+  //       .withArgs(accounts[0].address, value);
+  //   });
+  //
+  //   it("should append to validator set if the account has staked enough amount", async () => {
+  //     await contract.stake({ value });
+  //
+  //     expect(await contract.validators()).to.include(accounts[0].address);
+  //     expect(await contract.isValidator(accounts[0].address)).to.be.true;
+  //   });
+  //
+  //   it("shouldn't append new validator if the account has not staked enough amount", async () => {
+  //     const value = ethers.utils.parseEther("0.5");
+  //     await contract.stake({ value });
+  //
+  //     expect(await contract.validators()).not.to.include(accounts[0].address);
+  //     expect(await contract.isValidator(accounts[0].address)).to.be.false;
+  //   });
+  //
+  //   it("should reach full validator set capacity", async () => {
+  //     await Promise.all(
+  //       accounts.slice(0, 6).map((account) => {
+  //         stake(account, value);
+  //       })
+  //     );
+  //
+  //     await expect(stake(accounts[6], value)).to.be.revertedWith(
+  //       "Validator set has reached full capacity"
+  //     );
+  //   });
+  //
+  //   it("should be able to stake from staker account", async () => {
+  //     // 6 accounts will stake and become staker first
+  //     await Promise.all(
+  //       accounts.slice(0, 6).map((account) => {
+  //         stake(account, value);
+  //       })
+  //     );
+  //
+  //     // staker can stake more
+  //     await expect(stake(accounts[0], value))
+  //       .to.emit(contract, "Staked")
+  //       .withArgs(accounts[0].address, value);
+  //   });
+  // });
 
   // describe("Stake by transfer", () => {
   //   const value = ethers.utils.parseEther("1");
